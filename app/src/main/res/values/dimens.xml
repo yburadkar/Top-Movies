@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="detail_layout_margin">8dp</dimen>
+    <dimen name="detail_image_width">140dp</dimen>
+    <dimen name="detail_image_height">210dp</dimen>
+    <dimen name="text_size_normal">12sp</dimen>
+    <dimen name="text_size_detail_title">20sp</dimen>
+    <dimen name="text_size_detail_ratings">14sp</dimen>
+    <dimen name="detail_overview_padding_top">16dp</dimen>
+    <dimen name="detail_heading_text_size">14sp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+    <dimen name="loading_circle_size">42dp</dimen>
+    <dimen name="error_message_text_size">20sp</dimen>
+    <dimen name="review_author_text_size">14sp</dimen>
+    <dimen name="review_content_text_size">12sp</dimen>
+    <dimen name="gridView_movie_textSize">12sp</dimen>
+    <dimen name="trailer_name_textSize">12sp</dimen>
+    <dimen name="trailer_icon_size">30dp</dimen>
+</resources>

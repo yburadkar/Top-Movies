@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview_author"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="@dimen/review_author_text_size"
+        tools:text="Author Name"
+        android:background="@color/author_textView_background"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview_content"
+        android:textSize="@dimen/review_content_text_size"
+        app:layout_constraintTop_toBottomOf="@id/textview_author"
+        android:paddingTop="8dp"
+        android:paddingBottom="20dp"
+        tools:text="Movie Review Text"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

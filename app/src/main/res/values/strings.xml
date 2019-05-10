@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Top Movies</string>
+    <string name="popular_movies">Popular</string>
+    <string name="top_rated_movies">Top Rated </string>
+    <string name="loading_error_message">An error has occurred, please try again</string>
+    <string name="popularity_reselected_message">Already displaying the popular movies.</string>
+    <string name="top_rating_reselected_message">Already displaying the top-rated movies</string>
+    <string name="favorite_button_text">Mark as Favorite</string>
+    <string name="trailers_heading">Trailers:</string>
+    <string name="synopsis_heading">Synopsis:</string>
+    <string name="reviews_heading">Reviews:</string>
+    <string name="show_favorites">Favorites</string>
+    <string name="marked_favorite">Marked Favorite</string>
+    <string name="gridSpanCount">3</string>
+    <string name="play_trailer_button_content_desc">Play this trailer</string>
+</resources>
