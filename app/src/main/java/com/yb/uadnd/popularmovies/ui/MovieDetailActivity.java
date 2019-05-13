@@ -28,6 +28,7 @@ import com.yb.uadnd.popularmovies.viewmodels.MovieDetailViewModelFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -93,27 +94,26 @@ public class MovieDetailActivity extends AppCompatActivity {
         MovieDetailViewModelFactory factory = new MovieDetailViewModelFactory(
                 getApplicationContext(), mMovie);
         mDetailViewModel = ViewModelProviders.of(this, factory).get(MovieDetailViewModel.class);
-        mDetailViewModel.getMovieData(mMovie, new MovieDetailViewModel.NetworkOperationCallback() {
-            @Override
-            public void onTrailersReceived() {
-                mTrailers.clear();
-                mTrailers.addAll(mDetailViewModel.getTrailers());
-                Log.i(LOG_TAG, "onTrailersReceived: " + mTrailers.size());
-                mTrailerAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onReviewsReceived() {
-                mReviews.clear();
-                mReviews.addAll(mDetailViewModel.getReviews());
-                mReviewsAdapter.notifyDataSetChanged();
-            }
-        });
         mDetailViewModel.isFavorite.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer count) {
-                Log.i(LOG_TAG, "isFavorite onChanged: " + count);
                 if(count != null) markFavorite(count > 0);
+            }
+        });
+        mDetailViewModel.getTrailers().observe(this, new Observer<LinkedList<Trailer>>() {
+            @Override
+            public void onChanged(LinkedList<Trailer> trailers) {
+                mTrailers.clear();
+                mTrailers.addAll(trailers);
+                mTrailerAdapter.notifyDataSetChanged();
+            }
+        });
+        mDetailViewModel.getReviews().observe(this, new Observer<LinkedList<Review>>() {
+            @Override
+            public void onChanged(LinkedList<Review> reviews) {
+                mReviews.clear();
+                mReviews.addAll(reviews);
+                mReviewsAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -144,8 +144,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     public void onClickFavorites(View view) {
         boolean isChecked = mFavoriteCheckbox.isChecked();
-        Log.i(LOG_TAG, "onClickFavorites: " + isChecked);
-        mDetailViewModel.toggleFavorite(isChecked);
+        mDetailViewModel.updateFavorites(isChecked);
     }
 
     public void onClickDisplayMovieId(View view) {

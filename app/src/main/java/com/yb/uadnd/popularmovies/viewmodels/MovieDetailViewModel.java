@@ -18,51 +18,21 @@ public class MovieDetailViewModel extends ViewModel {
 
     private static final String LOG_TAG = MovieDetailViewModel.class.getSimpleName();
     private final AppRepository mRepository;
-    private LinkedList<Trailer> mTrailers = new LinkedList<>();
-    private LinkedList<Review> mReviews = new LinkedList<>();
+    private LiveData<LinkedList<Trailer>> mTrailers;
+    private LiveData<LinkedList<Review>> mReviews;
     public final LiveData<Integer> isFavorite;
     private final Movie mMovie;
     private int mPage = 1;
-
-    public interface NetworkOperationCallback {
-        void onTrailersReceived();
-        void onReviewsReceived();
-    }
 
     MovieDetailViewModel(@NonNull Context appContext, Movie movie) {
         mRepository = AppRepository.getInstance(appContext);
         mMovie = movie;
         isFavorite = mRepository.isFavorite(mMovie);
+        mTrailers = mRepository.getMovieTrailers(mMovie.getMovieId());
+        mReviews = mRepository.getMovieReviews(mMovie.getMovieId(), mPage);
     }
 
-    public void getMovieData(Movie movie, NetworkOperationCallback callback){
-        int id = mMovie.getMovieId();
-        mRepository.getMovieTrailers(id, new AppRepository.OnGetTrailersCallback() {
-            @Override
-            public void onSuccess(LinkedList<Trailer> trailers) {
-                Log.i(LOG_TAG, "onSuccess: Trailers Received " + trailers.size());
-                mTrailers = trailers;
-                callback.onTrailersReceived();
-            }
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
-        mRepository.getMovieReviews(id, mPage, new AppRepository.OnGetReviewsCallback() {
-            @Override
-            public void onSuccess(LinkedList<Review> reviews) {
-                mReviews = reviews;
-                callback.onReviewsReceived();
-            }
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
-    }
-
-    public void toggleFavorite(boolean isChecked) {
+    public void updateFavorites(boolean isChecked) {
         if(isChecked){
             mRepository.addToFavorites(mMovie);
         }else {
@@ -70,11 +40,11 @@ public class MovieDetailViewModel extends ViewModel {
         }
     }
 
-    public LinkedList<Trailer> getTrailers() {
+    public LiveData<LinkedList<Trailer>> getTrailers() {
         return mTrailers;
     }
 
-    public LinkedList<Review> getReviews() {
+    public LiveData<LinkedList<Review>> getReviews() {
         return mReviews;
     }
 }

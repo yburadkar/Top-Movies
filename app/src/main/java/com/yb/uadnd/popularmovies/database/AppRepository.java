@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,16 +42,6 @@ public class AppRepository {
     private final TmdbRetrofitInterface mApiService;
     private final Executor mExecutor;
 
-    public interface OnGetTrailersCallback{
-        void onSuccess(LinkedList<Trailer> trailers);
-        void onFailure(Throwable t);
-    }
-
-    public interface OnGetReviewsCallback{
-        void onSuccess(LinkedList<Review> reviews);
-        void onFailure(Throwable t);
-    }
-
     public static AppRepository getInstance(Context appContext) {
         if(ourInstance == null){
             ourInstance = new AppRepository(appContext);
@@ -76,6 +67,7 @@ public class AppRepository {
         options.put("api_key", API_KEY);
         options.put("language", "en-US");
         options.put("page", Integer.toString(pageNum));
+        Log.i(TAG, "Fetching movies");
 
         Call<MovieApiResponse> call = null;
         switch (mode){
@@ -102,11 +94,12 @@ public class AppRepository {
         });
     }
 
-    public void getMovieTrailers(int id, OnGetTrailersCallback callback) {
-
+    public LiveData<LinkedList<Trailer>> getMovieTrailers(int id) {
+        MutableLiveData<LinkedList<Trailer>> trailerList = new MutableLiveData<>();
         Map<String, String> options = new HashMap<>();
         options.put("api_key", API_KEY);
         options.put("language", "en-US");
+        Log.i(TAG, "Fetching trailers");
 
         Call<TrailerApiResponse> call = mApiService.getMovieVideoList(id, options);
 
@@ -123,22 +116,24 @@ public class AppRepository {
                             validTrailers.add(trailer);
                         }
                     }
-                    callback.onSuccess(validTrailers);
+                    trailerList.setValue(validTrailers);
                 }
             }
             @Override
             public void onFailure(Call<TrailerApiResponse> call, Throwable t) {
                 Log.i(TAG, "Failed to get trailers from TMdB: " + t.getMessage());
-                callback.onFailure(t);
             }
         });
+        return trailerList;
     }
 
-    public void getMovieReviews(int id, int page, OnGetReviewsCallback callback) {
+    public LiveData<LinkedList<Review>> getMovieReviews(int id, int page) {
+        MutableLiveData<LinkedList<Review>> reviewList = new MutableLiveData<>();
         Map<String, String> options = new HashMap<>();
         options.put("api_key", API_KEY);
         options.put("language", "en-US");
         options.put("page", Integer.toString(page));
+        Log.i(TAG, "Fetching reviews");
 
         Call<ReviewApiResponse> call = mApiService.getReviewsList(id, options);
 
@@ -148,15 +143,15 @@ public class AppRepository {
                 ReviewApiResponse apiResponse = response.body();
                 if (apiResponse != null) {
                     LinkedList<Review> reviews = new LinkedList<>(apiResponse.getResults());
-                    callback.onSuccess(reviews);
+                    reviewList.setValue(reviews);
                 }
             }
             @Override
             public void onFailure(Call<ReviewApiResponse> call, Throwable t) {
                 Log.i(TAG, "Failed to get trailers from TMdB: " + t.getMessage());
-                callback.onFailure(t);
             }
         });
+        return reviewList;
     }
 
     private void insertMovies(List<Movie> movies) {
