@@ -22,7 +22,7 @@ public interface MovieDao {
     LiveData<List<Movie>> getPopularMovies();
 
 //    @Query("SELECT * FROM popular ORDER BY userRating DESC")
-    @Query("SELECT * FROM popular ORDER BY popularity DESC")
+    @Query("SELECT * FROM popular")
     LiveData<List<Movie>> getTopRatedMovies();
 
     @Query("DELETE FROM popular ")

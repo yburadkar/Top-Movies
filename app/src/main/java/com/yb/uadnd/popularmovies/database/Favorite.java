@@ -4,10 +4,18 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 
 @Entity(tableName = "favorites")
-public class Favorite extends Movie {
+class Favorite extends Movie {
 
     @Ignore
     public Favorite() {
+        super();
+    }
+
+    @Ignore
+    public Favorite(Movie movie){
+        super(movie.getRowId(), movie.getMovieId(), movie.getTitle(), movie.getPosterPath(),
+                movie.getOverview(), movie.getUserRating(), movie.getPopularity(),
+                movie.getRatingCount(), movie.getReleaseDate());
     }
 
     public Favorite(int rowId, int movieId, String title, String posterPath, String overview, float userRating, float popularity, int ratingCount, String releaseDate) {

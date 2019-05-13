@@ -55,10 +55,9 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     private void changeMode(int mode) {
-
         setMode(mode);
         if(mMode.getValue() != MODE_FAVORITES) {
-            Log.i(TAG, "changeMode: " + mMode);
+            Log.i(TAG, "changeMode: " + mMode.getValue());
             mPageNum = 0;
 //            mRepository.changeMode(mode);
             mRepository.deleteAllMovies();

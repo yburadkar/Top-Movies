@@ -1,6 +1,8 @@
 package com.yb.uadnd.popularmovies.ui;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,7 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import com.yb.uadnd.popularmovies.network.NetworkUtils;
 import com.yb.uadnd.popularmovies.network.models.Review;
 import com.yb.uadnd.popularmovies.network.models.Trailer;
 import com.yb.uadnd.popularmovies.viewmodels.MovieDetailViewModel;
+import com.yb.uadnd.popularmovies.viewmodels.MovieDetailViewModelFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_title) TextView mTitle;
     @BindView(R.id.detail_ratings) TextView mRating;
     @BindView(R.id.detail_release_date) TextView mReleaseDate;
-    @BindView(R.id.button_favorite) Button mFavoriteButton;
+    @BindView(R.id.button_favorite) CheckBox mFavoriteCheckbox;
     @BindView(R.id.trailer_list) RecyclerView mTrailersRecyclerView;
     @BindView(R.id.detail_overview) TextView mOverview;
     @BindView(R.id.reviews_list) RecyclerView mReviewsRecyclerView;
@@ -49,7 +52,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     private final ArrayList<Review> mReviews = new ArrayList<>();
     private TrailerAdapter mTrailerAdapter;
     private ReviewsAdapter mReviewsAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +83,16 @@ public class MovieDetailActivity extends AppCompatActivity {
                         .into(mPoster);
             }
         }
-
         initRecyclerViews();
         initViewModels();
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) actionBar.setTitle(getString(R.string.movie_detail_title));
     }
 
     private void initViewModels() {
-        mDetailViewModel = ViewModelProviders.of(this).get(MovieDetailViewModel.class);
+        MovieDetailViewModelFactory factory = new MovieDetailViewModelFactory(
+                getApplicationContext(), mMovie);
+        mDetailViewModel = ViewModelProviders.of(this, factory).get(MovieDetailViewModel.class);
         mDetailViewModel.getMovieData(mMovie, new MovieDetailViewModel.NetworkOperationCallback() {
             @Override
             public void onTrailersReceived() {
@@ -104,6 +109,23 @@ public class MovieDetailActivity extends AppCompatActivity {
                 mReviewsAdapter.notifyDataSetChanged();
             }
         });
+        mDetailViewModel.isFavorite.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer count) {
+                Log.i(LOG_TAG, "isFavorite onChanged: " + count);
+                if(count != null) markFavorite(count > 0);
+            }
+        });
+    }
+
+    private void markFavorite(boolean isMarked) {
+        Log.i(LOG_TAG, "markFavorite: " + isMarked);
+        mFavoriteCheckbox.setChecked(isMarked);
+        if(isMarked){
+            mFavoriteCheckbox.setText(R.string.marked_favorite);
+        }else {
+            mFavoriteCheckbox.setText(R.string.favorite_button_text);
+        }
     }
 
     private void initRecyclerViews() {
@@ -121,7 +143,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     public void onClickFavorites(View view) {
-
+        boolean isChecked = mFavoriteCheckbox.isChecked();
+        Log.i(LOG_TAG, "onClickFavorites: " + isChecked);
+        mDetailViewModel.toggleFavorite(isChecked);
     }
 
     public void onClickDisplayMovieId(View view) {

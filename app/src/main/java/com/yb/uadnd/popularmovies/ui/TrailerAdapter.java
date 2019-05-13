@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
 
-    private ArrayList<Trailer> mTrailers;
+    private final ArrayList<Trailer> mTrailers;
     private final Context mContext;
 
     TrailerAdapter(ArrayList<Trailer> mTrailers, Context context) {

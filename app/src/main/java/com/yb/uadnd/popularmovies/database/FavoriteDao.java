@@ -9,18 +9,18 @@ import androidx.room.Query;
 
 import java.util.List;
 
-@Dao()
+@Dao
 public interface FavoriteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertFavorite(Movie movie);
+    void insertFavorite(Favorite movie);
 
-    @Query("SELECT * FROM favorites WHERE EXISTS(SELECT * FROM favorites WHERE movieId = :movieId )")
-    boolean isFavorite(int movieId);
+    @Query("SELECT COUNT() FROM favorites WHERE movieId = :movieId")
+    LiveData<Integer> isFavorite(int movieId);
 
     @Query("SELECT * FROM favorites")
     LiveData<List<Movie>> getAllFavorites();
 
     @Delete
-    void removeFavorite(Movie movie);
+    void removeFavorite(Favorite movie);
 }

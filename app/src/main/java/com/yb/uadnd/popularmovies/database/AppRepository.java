@@ -60,12 +60,9 @@ public class AppRepository {
 
     private AppRepository(Context appContext) {
         mDb = AppDatabase.getInstance(appContext);
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(TMDB_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mApiService = mRetrofit.create(TmdbRetrofitInterface.class);
         mExecutor = Executors.newSingleThreadExecutor();
@@ -86,21 +83,17 @@ public class AppRepository {
             case MODE_TOP_RATED: call = mApiService.getTopRatedMovies(options); break;
         }
 
-        Log.i(TAG, "Call: " + call.request().url().toString());
         call.enqueue(new Callback<MovieApiResponse>() {
             @Override
             public void onResponse(Call<MovieApiResponse> call, Response<MovieApiResponse> response) {
-                Log.i(TAG, "TMdB response message: " + response.message());
                 MovieApiResponse movieApiResponse = response.body();
                 if (movieApiResponse != null) {
                     List<Movie> movies = movieApiResponse.getResults();
                     if(movies != null && movies.size() > 0){
-                        Log.i("Network", "Got movies from TMdB = " + movies.size());
                         insertMovies(movies);
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<MovieApiResponse> call, Throwable t) {
                 Log.i(TAG, "Failed to get movies from TMdB: " + t.getMessage());
@@ -117,29 +110,22 @@ public class AppRepository {
 
         Call<TrailerApiResponse> call = mApiService.getMovieVideoList(id, options);
 
-        Log.i(TAG, "Call: " + call.request().url().toString());
         call.enqueue(new Callback<TrailerApiResponse>() {
             @Override
             public void onResponse(Call<TrailerApiResponse> call, Response<TrailerApiResponse> response) {
-                Log.i(TAG, "Trailer response message: " + response.message());
                 TrailerApiResponse apiResponse = response.body();
                 if (apiResponse != null) {
-//                    List<Trailer> trailers = apiResponse.getResults();
                     LinkedList<Trailer> trailers = new LinkedList<>(apiResponse.getResults());
-                    Log.i("Network", "Got videos from TMdB = " + trailers.size());
                     LinkedList<Trailer> validTrailers = new LinkedList<>();
                     for(int i = 0; i < trailers.size(); i++){
                         Trailer trailer = trailers.get(i);
                         if(trailer.getType().equals("Trailer") && trailer.getSite().equals("YouTube")){
                             validTrailers.add(trailer);
-                        }else {
-                            Log.i("Network", "Trailer = " + trailer.getName());
                         }
                     }
                     callback.onSuccess(validTrailers);
                 }
             }
-
             @Override
             public void onFailure(Call<TrailerApiResponse> call, Throwable t) {
                 Log.i(TAG, "Failed to get trailers from TMdB: " + t.getMessage());
@@ -156,20 +142,15 @@ public class AppRepository {
 
         Call<ReviewApiResponse> call = mApiService.getReviewsList(id, options);
 
-        Log.i(TAG, "Call: " + call.request().url().toString());
         call.enqueue(new Callback<ReviewApiResponse>() {
             @Override
             public void onResponse(Call<ReviewApiResponse> call, Response<ReviewApiResponse> response) {
-                Log.i(TAG, "Trailer response message: " + response.message());
                 ReviewApiResponse apiResponse = response.body();
                 if (apiResponse != null) {
-//                    List<Trailer> trailers = apiResponse.getResults();
                     LinkedList<Review> reviews = new LinkedList<>(apiResponse.getResults());
-                    Log.i("Network", "Got reviews from TMdB = " + reviews.size());
                     callback.onSuccess(reviews);
                 }
             }
-
             @Override
             public void onFailure(Call<ReviewApiResponse> call, Throwable t) {
                 Log.i(TAG, "Failed to get trailers from TMdB: " + t.getMessage());
@@ -205,7 +186,29 @@ public class AppRepository {
     }
 
     public LiveData<List<Movie>> getFavorites() {
-        return null;
+        return mDb.favoriteDao().getAllFavorites();
+    }
+
+    public LiveData<Integer> isFavorite(Movie movie) {
+        return mDb.favoriteDao().isFavorite(movie.getMovieId());
+    }
+
+    public void removeFromFavorites(Movie movie) {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.favoriteDao().removeFavorite(new Favorite(movie));
+            }
+        });
+    }
+
+    public void addToFavorites(Movie movie) {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.favoriteDao().insertFavorite(new Favorite(movie));
+            }
+        });
     }
 
     public int getMovieCount(){

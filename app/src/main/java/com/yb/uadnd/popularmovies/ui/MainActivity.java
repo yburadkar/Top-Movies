@@ -1,5 +1,6 @@
 package com.yb.uadnd.popularmovies.ui;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -11,7 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
+import android.view.View;
 import android.widget.TextView;
 
 import com.yb.uadnd.popularmovies.R;
@@ -31,11 +32,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
     @BindView(R.id.error_message) TextView mErrorMessage;
-    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
 
     private final List<Movie> mMovies = new ArrayList<>();
     private MainViewModel mViewModel;
     private MovieAdapter mAdapter;
+    private int mMode = MODE_POPULAR;
+    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         ButterKnife.bind(this);
         initRecyclerView();
         initViewModel();
+        mActionBar = getSupportActionBar();
+        if(mActionBar != null) mActionBar.setTitle(getString(R.string.popular_movies));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,13 +60,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        int mode = MODE_POPULAR;
+        String title = getString(R.string.popular_movies);
         switch (id){
-            case R.id.sort_by_popularity: mode = MODE_POPULAR; break;
-            case R.id.sort_by_rating: mode = MODE_TOP_RATED; break;
-            case R.id.favorites: mode = MODE_FAVORITES; break;
+            case R.id.sort_by_popularity:
+                mMode = MODE_POPULAR;
+                title = getString(R.string.popular_movies);
+                break;
+            case R.id.sort_by_rating:
+                mMode = MODE_TOP_RATED;
+                title = getString(R.string.top_rated_movies);
+                break;
+            case R.id.favorites:
+                mMode = MODE_FAVORITES;
+                title = getString(R.string.your_favorites);
+                break;
         }
-        mViewModel.handleMenuItemClick(mode);
+        mViewModel.handleMenuItemClick(mMode);
+        if(mActionBar != null) mActionBar.setTitle(title);
         return super.onOptionsItemSelected(item);
     }
 
@@ -73,9 +86,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mMovies.clear();
             mMovies.addAll(movies);
             mAdapter.notifyDataSetChanged();
+            showEmptyMessage(movies.size() == 0);
         };
         mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mViewModel.mMovies.observe(this, movieObserver);
+    }
+
+    private void showEmptyMessage(boolean show) {
+        if(mMode == MODE_FAVORITES && show){
+            mErrorMessage.setText(getResources().getString(R.string.favorites_empty_message));
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }else {
+            mErrorMessage.setVisibility(View.GONE);
+        }
     }
 
     private void initRecyclerView() {

@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private static final String TAG = MovieAdapter.class.getSimpleName();
-    private List<Movie>mMovies;
+    private final List<Movie>mMovies;
     private final Context mContext;
     private MainViewModel mViewModel;
     private final MovieListScrollListener mMovieListScrollListener;
