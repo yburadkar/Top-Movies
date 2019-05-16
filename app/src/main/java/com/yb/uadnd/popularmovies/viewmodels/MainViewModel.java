@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.yb.uadnd.popularmovies.MyApp;
 import com.yb.uadnd.popularmovies.database.AppRepository;
 import com.yb.uadnd.popularmovies.database.Movie;
 
@@ -27,9 +28,9 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(@NonNull Application application) {
         super(application);
+        MyApp.getmIdlingResource().setIdleState(false);
         mRepository = AppRepository.getInstance(application.getApplicationContext());
-        //Every time the app starts, the old movie data in db is cleared, get fresh data from API
-        //with mode POPULAR, starting with page 1 (first 20 movies)
+        //Start the app in POPULAR mode and get fresh Page 1 data from TMDB API
         setMode(MODE_POPULAR);
         mPageNum = 0;
         mMovies = Transformations.switchMap(mMode, (mode) -> {
@@ -57,13 +58,9 @@ public class MainViewModel extends AndroidViewModel {
     private void changeMode(int mode) {
         setMode(mode);
         if(mMode.getValue() != MODE_FAVORITES) {
-            Log.i(TAG, "changeMode: " + mMode.getValue());
-            mPageNum = 0;
-//            mRepository.changeMode(mode);
             mRepository.deleteAllMovies();
+            mPageNum = 0;
             fetchMoreMovies();
-        }else {
-            getFavorites();
         }
     }
 

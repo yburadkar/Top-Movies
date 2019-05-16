@@ -1,7 +1,6 @@
 package com.yb.uadnd.popularmovies.viewmodels;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -16,7 +15,6 @@ import java.util.LinkedList;
 
 public class MovieDetailViewModel extends ViewModel {
 
-    private static final String LOG_TAG = MovieDetailViewModel.class.getSimpleName();
     private final AppRepository mRepository;
     private LiveData<LinkedList<Trailer>> mTrailers;
     private LiveData<LinkedList<Review>> mReviews;

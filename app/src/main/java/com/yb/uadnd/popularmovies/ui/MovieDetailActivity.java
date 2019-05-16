@@ -118,10 +118,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void markFavorite(boolean isMarked) {
-        Log.i(LOG_TAG, "markFavorite: " + isMarked);
-        mFavoriteCheckbox.setChecked(isMarked);
-        if(isMarked){
+    private void markFavorite(boolean isFavorite) {
+        Log.i(LOG_TAG, "markFavorite: " + isFavorite);
+        mFavoriteCheckbox.setChecked(isFavorite);
+        if(isFavorite){
             mFavoriteCheckbox.setText(R.string.marked_favorite);
         }else {
             mFavoriteCheckbox.setText(R.string.favorite_button_text);

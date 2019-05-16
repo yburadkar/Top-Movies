@@ -15,7 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.yb.uadnd.popularmovies.MyApp;
 import com.yb.uadnd.popularmovies.R;
+import com.yb.uadnd.popularmovies.SimpleIdlingResource;
 import com.yb.uadnd.popularmovies.database.Movie;
 import com.yb.uadnd.popularmovies.viewmodels.MainViewModel;
 
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter mAdapter;
     private int mMode = MODE_POPULAR;
     private ActionBar mActionBar;
+    private SimpleIdlingResource mResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         initViewModel();
         mActionBar = getSupportActionBar();
         if(mActionBar != null) mActionBar.setTitle(getString(R.string.popular_movies));
+         mResource = MyApp.getmIdlingResource();
     }
 
     @Override
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mMovies.addAll(movies);
             mAdapter.notifyDataSetChanged();
             showEmptyMessage(movies.size() == 0);
+            if(mResource != null && movies.size()>0) mResource.setIdleState(true);
         };
         mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mViewModel.mMovies.observe(this, movieObserver);
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
+    //Movie Adapter triggers this method when user scrolls nearer to the end of the current page
     public void loadMoreMovies() {
         mViewModel.fetchMoreMovies();
     }

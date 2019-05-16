@@ -6,9 +6,9 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.yb.uadnd.popularmovies.BuildConfig;
+import com.yb.uadnd.popularmovies.MyApp;
+import com.yb.uadnd.popularmovies.SimpleIdlingResource;
 import com.yb.uadnd.popularmovies.network.models.MovieApiResponse;
 import com.yb.uadnd.popularmovies.network.TmdbRetrofitInterface;
 import com.yb.uadnd.popularmovies.network.models.Review;
@@ -41,10 +41,12 @@ public class AppRepository {
     private final Retrofit mRetrofit;
     private final TmdbRetrofitInterface mApiService;
     private final Executor mExecutor;
+    private static SimpleIdlingResource mResource;
 
     public static AppRepository getInstance(Context appContext) {
         if(ourInstance == null){
             ourInstance = new AppRepository(appContext);
+            mResource = MyApp.getmIdlingResource();
         }
         return ourInstance;
     }
@@ -62,7 +64,9 @@ public class AppRepository {
     }
 
     public void fetchMoviesAndInsertInDb(int mode, int pageNum) {
-
+        if (mResource != null) {
+            mResource.setIdleState(false);
+        }
         Map<String, String> options = new HashMap<>();
         options.put("api_key", API_KEY);
         options.put("language", "en-US");
