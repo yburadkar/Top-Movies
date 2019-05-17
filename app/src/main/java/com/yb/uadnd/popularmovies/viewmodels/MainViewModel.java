@@ -1,6 +1,7 @@
 package com.yb.uadnd.popularmovies.viewmodels;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.yb.uadnd.popularmovies.MyApp;
+import com.yb.uadnd.popularmovies.R;
 import com.yb.uadnd.popularmovies.database.AppRepository;
 import com.yb.uadnd.popularmovies.database.Movie;
 
@@ -22,14 +24,17 @@ public class MainViewModel extends AndroidViewModel {
     public static final int MODE_FAVORITES = 3;
     private static final String TAG = MainViewModel.class.getSimpleName();
     private final AppRepository mRepository;
+    private Context mAppContext;
     private int mPageNum;
-    private final MutableLiveData<Integer> mMode = new MutableLiveData<>();
-    public final LiveData<List<Movie>> mMovies;
 
+    private final MutableLiveData<Integer> mMode = new MutableLiveData<>();
+
+    public final LiveData<List<Movie>> mMovies;
     public MainViewModel(@NonNull Application application) {
         super(application);
         MyApp.getmIdlingResource().setIdleState(false);
-        mRepository = AppRepository.getInstance(application.getApplicationContext());
+        mAppContext = application.getApplicationContext();
+        mRepository = AppRepository.getInstance(mAppContext);
         //Start the app in POPULAR mode and get fresh Page 1 data from TMDB API
         setMode(MODE_POPULAR);
         mPageNum = 0;
@@ -64,15 +69,20 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-    private void getFavorites() {
-        mRepository.getFavorites();
-    }
-
-    void resetPageNumber(){
-        mPageNum = 1;
-    }
-
     private void setMode(int mode){
         mMode.setValue(mode);
+    }
+
+    public LiveData<Integer> getmMode() {
+        return mMode;
+    }
+
+    public String provideTitle(){
+        switch (mMode.getValue()){
+            case MODE_POPULAR: return mAppContext.getString(R.string.popular_movies);
+            case MODE_TOP_RATED: return mAppContext.getString(R.string.top_rated_movies);
+            case MODE_FAVORITES: return mAppContext.getString(R.string.your_favorites);
+            default: return mAppContext.getString(R.string.popular_movies);
+        }
     }
 }

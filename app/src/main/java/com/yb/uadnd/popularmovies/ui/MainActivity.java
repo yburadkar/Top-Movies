@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private final List<Movie> mMovies = new ArrayList<>();
     private MainViewModel mViewModel;
     private MovieAdapter mAdapter;
-    private int mMode = MODE_POPULAR;
+    private int mMode;
     private ActionBar mActionBar;
     private SimpleIdlingResource mResource;
 
@@ -50,38 +50,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         initRecyclerView();
         initViewModel();
         mActionBar = getSupportActionBar();
-        if(mActionBar != null) mActionBar.setTitle(getString(R.string.popular_movies));
-         mResource = MyApp.getmIdlingResource();
+        mResource = MyApp.getmIdlingResource();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        String title = getString(R.string.popular_movies);
-        switch (id){
-            case R.id.sort_by_popularity:
-                mMode = MODE_POPULAR;
-                title = getString(R.string.popular_movies);
-                break;
-            case R.id.sort_by_rating:
-                mMode = MODE_TOP_RATED;
-                title = getString(R.string.top_rated_movies);
-                break;
-            case R.id.favorites:
-                mMode = MODE_FAVORITES;
-                title = getString(R.string.your_favorites);
-                break;
-        }
-        mViewModel.handleMenuItemClick(mMode);
-        if(mActionBar != null) mActionBar.setTitle(title);
-        return super.onOptionsItemSelected(item);
+    private void initRecyclerView() {
+        int spanCount = Integer.parseInt(getResources().getString(R.string.gridSpanCount));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mAdapter = new MovieAdapter(mMovies, this, this);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void initViewModel() {
@@ -95,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         };
         mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mViewModel.mMovies.observe(this, movieObserver);
+        mViewModel.getmMode().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                setActionBarTitle();
+            }
+        });
     }
 
     private void showEmptyMessage(boolean show) {
@@ -106,17 +89,39 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
-    private void initRecyclerView() {
-        int spanCount = Integer.parseInt(getResources().getString(R.string.gridSpanCount));
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        mAdapter = new MovieAdapter(mMovies, this, this);
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
     @Override
     //Movie Adapter triggers this method when user scrolls nearer to the end of the current page
     public void loadMoreMovies() {
         mViewModel.fetchMoreMovies();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.sort_by_popularity:
+                mMode = MODE_POPULAR;
+                break;
+            case R.id.sort_by_rating:
+                mMode = MODE_TOP_RATED;
+                break;
+            case R.id.favorites:
+                mMode = MODE_FAVORITES;
+                break;
+        }
+        mViewModel.handleMenuItemClick(mMode);
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setActionBarTitle() {
+        String title = mViewModel.provideTitle();
+        if(mActionBar != null) mActionBar.setTitle(title);
     }
 }
