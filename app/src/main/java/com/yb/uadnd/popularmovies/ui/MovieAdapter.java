@@ -56,7 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Movie movie = mMovies.get(position);
         holder.mTitle.setText(movie.getTitle());
         String ratingText = String.format(Locale.getDefault(),"%.1f",movie.getUserRating())
-                + " (" + movie.getRatingCount() + ")       " + (position + 1);
+                + " (" + movie.getRatingCount() + ")         " + (position + 1);
         holder.mRating.setText(ratingText);
         if(movie.getPosterPath() == null) {
             Picasso.get().load((String)null).into(holder.mPoster);

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="author_textView_background">@android:color/holo_orange_light</color>
+    <color name="colorPrimary">#616160</color>
+    <color name="colorPrimaryDark">#302F2F</color>
+    <color name="colorAccent">@android:color/holo_orange_light</color>
+    <color name="author_textView_background">#EEEEEC</color>
+    <color name="movie_item_text_background">@android:color/holo_orange_light</color>
 </resources>

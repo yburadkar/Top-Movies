@@ -25,7 +25,7 @@ public class MainViewModel extends AndroidViewModel {
     private static final String TAG = MainViewModel.class.getSimpleName();
     private final AppRepository mRepository;
     private Context mAppContext;
-    private int mPageNum;
+    public int mPageNum;
 
     private final MutableLiveData<Integer> mMode = new MutableLiveData<>();
 

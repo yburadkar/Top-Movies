@@ -13,7 +13,8 @@
     <dimen name="error_message_text_size">20sp</dimen>
     <dimen name="review_author_text_size">14sp</dimen>
     <dimen name="review_content_text_size">12sp</dimen>
-    <dimen name="gridView_movie_textSize">12sp</dimen>
+    <dimen name="movie_rating_textSize">10sp</dimen>
+    <dimen name="movie_name_textSize">12sp</dimen>
     <dimen name="trailer_name_textSize">12sp</dimen>
     <dimen name="trailer_icon_size">30dp</dimen>
 </resources>
