@@ -62,7 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Picasso.get().load((String)null).into(holder.mPoster);
         } else {
             String posterPath = movie.getPosterPath().substring(1);
-            URL url = NetworkUtils.buildPosterURL(posterPath);
+            URL url = NetworkUtils.Companion.buildPosterURL(posterPath);
             if(url != null) {
                 String posterUrl = url.toString();
                 Picasso.get()

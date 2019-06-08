@@ -1,12 +1,5 @@
 package com.yb.uadnd.popularmovies.ui;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +8,13 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -74,7 +74,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             Picasso.get().load((String)null).into(mPoster);
         } else {
             String posterPath = mMovie.getPosterPath().substring(1);
-            URL url = NetworkUtils.buildPosterURL(posterPath);
+            URL url = NetworkUtils.Companion.buildPosterURL(posterPath);
             if (url != null) {
                 String posterUrl = url.toString();
                 Picasso.get()

@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yb.uadnd.popularmovies.R;
-import com.yb.uadnd.popularmovies.network.NetworkUtils;
 import com.yb.uadnd.popularmovies.network.models.Trailer;
 
 import java.net.URL;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.yb.uadnd.popularmovies.network.NetworkUtils.Companion;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
 
@@ -63,7 +64,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            URL url = NetworkUtils.buildYouTubeUrl(mTrailers.get(position).getKey());
+            URL url = Companion.buildYouTubeUrl(mTrailers.get(position).getKey());
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.toString()));
             mContext.startActivity(intent);
         }

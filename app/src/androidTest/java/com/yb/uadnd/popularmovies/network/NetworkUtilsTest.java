@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 
 import java.net.URL;
 
+import static com.yb.uadnd.popularmovies.network.NetworkUtils.Companion;
 import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
@@ -15,7 +16,7 @@ public class NetworkUtilsTest {
     @Test
     public void checkBuildPosterUrl_forValidUrl(){
         String imagePath = "ziEuG1essDuWuC5lpWUaw1uXY2O.jpg";
-        URL url = NetworkUtils.buildPosterURL(imagePath);
+        URL url = Companion.buildPosterURL(imagePath);
         String actual = null;
         if(url != null) actual = url.toString();
         String expected = "https://image.tmdb.org/t/p/w342/" + imagePath;
@@ -25,7 +26,7 @@ public class NetworkUtilsTest {
     @Test
     public void checkBuildPosterUrl_forNullImagePath(){
         String imagePath = null;
-        URL url = NetworkUtils.buildPosterURL(imagePath);
+        URL url = Companion.buildPosterURL(imagePath);
         String actual = null;
         if(url != null) actual = url.toString();
         String expected = null;
@@ -35,7 +36,7 @@ public class NetworkUtilsTest {
     @Test
     public void buildYouTubeUrl_forValidKey(){
         String key = "ziEuG1essDu";
-        URL url = NetworkUtils.buildYouTubeUrl(key);
+        URL url = Companion.buildYouTubeUrl(key);
         String actual = null;
         if(url != null) actual = url.toString();
         String expected = "https://www.youtube.com/watch?v="+ key;
